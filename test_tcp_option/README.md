@@ -1,7 +1,7 @@
 # Testing the Customized Linux Kernel Functionality
 
 ## Topology
-The testbed consists of **two hosts connected to one switch**.
+The testbed consists of **two hosts connected to one switch** (s1-runtime.json).
 
 <img src="topo.jpg" alt="topo" width="400">
 
@@ -52,5 +52,5 @@ In streaming mode:
 ---
 
 ## Detailed Test Videos
-- **File Transfer:** [file.mp4](file.mp4)  
-- **Streaming:** [streaming.mp4](streaming.mp4)
+- **File Transfer:** [Download / View on Google Drive](https://drive.google.com/file/d/1pLlf7VcpZDlBFHFkc94GGsidyo4vuCeG/view?usp=sharing)
+- **Streaming:** [Download / View on Google Drive](https://drive.google.com/file/d/1tTIzPpQbGndGJbXDEMuH4RNK0kld97Hw/view?usp=drive_link)
