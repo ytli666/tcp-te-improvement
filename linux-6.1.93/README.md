@@ -68,13 +68,6 @@ struct tcp_flow_info {
 };
 ```
 
----
-
-### Deployment
-After making these modifications, **reboot the Linux kernel** and apply it to the **P4 virtual machine**.
-
----
-
 ### Rebuilding the Linux Kernel
 
 **Requirements:**  
