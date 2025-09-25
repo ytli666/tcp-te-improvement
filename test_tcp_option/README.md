@@ -3,7 +3,7 @@
 ## Topology
 The testbed consists of **two hosts connected to one switch**.
 
-![topo](topo.jpg)
+<img src="topo.jpg" alt="topo" width="400">
 
 - On **h1**: run `send.py`
 - On **h2**: run `receive.py`
