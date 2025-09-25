@@ -36,7 +36,7 @@ We consider two scenarios:
 
 | Tuple                  | File Transfer | Streaming |
 |-------------------------|---------------|-----------|
-| total_time              | ✔             |           |
+| total_time              |               | ✔         |
 | elapsed_time            | ✔             | ✔         |
 | total_size              | ✔             |           |
 | sent_size               | ✔             | ✔         |
