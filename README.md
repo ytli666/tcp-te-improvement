@@ -8,8 +8,7 @@
 ---
 
 ## Research Motivation
-With the increasing diversity of network applications, managing data flows with different characteristics has become a central challenge in network optimization.  
-P4 (Programming Protocol-Independent Packet Processors) enables programmable switches to dynamically adjust routing strategies and achieve precise load balancing.  
+With the increasing diversity of network applications, managing data flows with different characteristics has become a central challenge in network optimization. P4 (Programming Protocol-Independent Packet Processors) enables programmable switches to dynamically adjust routing strategies and achieve precise load balancing.  
 However, in practice, a critical issue arises: **control latency**.
 
 Specifically, the process from detecting network congestion to updating routing rules in the P4 controller introduces non-negligible delay. For very short-lived traffic (mouse flows), this delay often renders control decisions ineffective—by the time the new rule is installed, the flow has already completed, making the control effort meaningless.
@@ -50,7 +49,7 @@ We consider two scenarios:
 ## Implementation Details
 To enable these tuples to be parsed by the P4 controller during TCP transmission, we embedded them into the TCP option field. This required modifying the Linux kernel and rebooting the system.  
 
-- Kernel modification: [Linux kernel source code](./linux-6.1.93)  
+- Kernel modification: [change of Linux kernel](./linux-6.1.93)  
 - Validation with simple topology & test files: [TCP option test](./test_tcp_option)  
 
 The experiments confirmed successful embedding of the tuples.  
