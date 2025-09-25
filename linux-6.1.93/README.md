@@ -72,3 +72,26 @@ struct tcp_flow_info {
 
 ### Deployment
 After making these modifications, **reboot the Linux kernel** and apply it to the **P4 virtual machine**.
+
+---
+
+### Rebuilding the Linux Kernel
+
+**Requirements:**  
+- Virtual machine disk space of at least **50 GB**
+
+**Steps:**  
+```bash
+cp -v /boot/config-$(uname -r) .config
+# Edit the .config file as needed
+make -j$(nproc)
+sudo make modules_install
+sudo make install
+reboot  # Press ESC during reboot to select the new kernel
+```
+
+**Verification:**  
+After reboot, confirm the kernel version with:
+```bash
+uname -r
+```
