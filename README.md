@@ -3,7 +3,7 @@
 ## Members
 - Li Yuan-Cai  
 - Lian Jia-Yao  
-- Yang Zhen-Yu  
+- Yang Jhen-Yu  
 
 ---
 
