@@ -1,4 +1,4 @@
-# Flow-Info Kernel – Test Transmission
+Test Transmission
 
 ## Test Content
 - Topology: **fat-tree (k=4)**
