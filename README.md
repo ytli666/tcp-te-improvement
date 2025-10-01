@@ -56,11 +56,19 @@ The experiments confirmed successful embedding of the tuples.
 
 ---
 
-## Algorithm Comparison
+## Algorithm Comparison (Unfinished)
 We implemented multiple algorithms to evaluate performance improvements when utilizing the five custom tuples.  
 Using **BFS** as the baseline, we compared the results of other algorithms.  
 
 - Detailed process: [Send-time testing](./test_sendtime)  
+
+---
+
+## Packet_in Implementation (Unfinished)
+We attempted to implement **packet_in** functionality in the P4 controller to actively notify about flow-related events.  
+This module is still **under development** and not yet complete.  
+
+- Source folder: [packet_in](./packet_in)  
 
 ---
 
