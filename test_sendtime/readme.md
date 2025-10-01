@@ -31,6 +31,3 @@ Test Transmission
 ## Topology
 ![topology](topo.jpg)
 
-## Reference
-- https://github.com/ytli666/flow-info-kernel
-
