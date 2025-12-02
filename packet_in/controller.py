@@ -147,7 +147,7 @@ def install_direct_host_rules():
 
         try:
             table_entry = p4info_helper.buildTableEntry(
-                table_name="MyIngress.ipv4_lpm",
+                table_name="MyIngress.ipv4_direct",
                 match_fields={"hdr.ipv4.dstAddr": (ip, 32)},
                 action_name="MyIngress.ipv4_forward",
                 action_params={"dstAddr": mac, "port": int(out_port)}
@@ -159,7 +159,7 @@ def install_direct_host_rules():
             traceback.print_exc()
 
 
-def install_path_on_switches(path, dst_ip):
+def install_path_on_switches(path, src_ip, dst_ip):
     """
     Install forwarding rules along `path` (a list of node names), using link_ports.
     Match on hdr.ipv4.dstAddr /32.
@@ -186,7 +186,10 @@ def install_path_on_switches(path, dst_ip):
         try:
             table_entry = p4info_helper.buildTableEntry(
                 table_name="MyIngress.ipv4_lpm",
-                match_fields={"hdr.ipv4.dstAddr": (dst_ip, 32)},
+                match_fields={
+                    "hdr.ipv4.srcAddr": src_ip,
+                    "hdr.ipv4.dstAddr": (dst_ip, 32)
+                },
                 action_name="MyIngress.ipv4_forward",
                 action_params={"dstAddr": ip_to_mac[dst_ip], "port": int(out_port)}
             )
@@ -287,24 +290,13 @@ async def processNotif(notif_queue):
                     path = nx.shortest_path(graph, src_sw, dst_sw, weight="weight")
                     print(f"[INFO] Computed path: {path}")
                     # install rules
-                    install_path_on_switches(path, dst_ip)
-                    # attempt PacketOut for the original packet: send from ingress switch to next hop
-                    if len(path) >= 2:
-                        ingress_sw = SWITCHES.get(src_sw)
-                        if ingress_sw is not None:
-                            # out_port on ingress = port towards path[1]
-                            out_port = link_ports.get((src_sw, path[1]))
-                            if out_port is not None:
-                                print(f"[INFO] Sending PacketOut from {src_sw} to port {out_port} for original packet")
-                                ok = send_packet_out(ingress_sw, payload, out_port)
-                                if not ok:
-                                    print("[WARN] PacketOut attempts all failed; but rules are installed for subsequent packets.")
-                            else:
-                                print(f"[WARN] Could not find out_port for ({src_sw}, {path[1]}) to send PacketOut")
-                        else:
-                            print(f"[WARN] No ingress switch connection object for {src_sw}")
-                    else:
-                        print("[WARN] Computed path too short to PacketOut (len<2).")
+                    install_path_on_switches(path, src_ip, dst_ip)
+
+                    rev_path = list(reversed(path))
+                    print(f"[INFO] Computed reverse path: {rev_path}")
+                    install_path_on_switches(rev_path, dst_ip, src_ip)
+
+                    
                 except nx.NetworkXNoPath:
                     print(f"[WARN] No path between {src_sw} and {dst_sw}")
 
