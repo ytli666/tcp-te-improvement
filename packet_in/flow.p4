@@ -72,16 +72,6 @@ header tcp_t {
     bit<16> urgentPtr;
 }
 
-header tcp_option_flow_info_t {
-    bit<8>  kind;
-    bit<8>  length;
-    bit<32> total_time;
-    bit<32> elapsed_time;
-    bit<32> total_size;
-    bit<32> sent_size;
-    bit<32> estimated_remaining_time;
-}
-
 
 @controller_header("packet_out")
 header packet_out_t {
@@ -98,16 +88,7 @@ struct headers {
     arp_t        arp;
     ipv4_t       ipv4;
     tcp_t        tcp;
-    tcp_option_flow_info_t  flow_info;
 }
-
-/* ===== Registers ===== */
-register<bit<32>>(1024) reg_total_time;
-register<bit<32>>(1024) reg_elapsed_time;
-register<bit<32>>(1024) reg_total_size;
-register<bit<32>>(1024) reg_sent_size;
-register<bit<32>>(1024) reg_estimated_remaining_time;
-register<bit<32>>(1) reg_ptr;
 
 /*************************************************************************
 *********************** P A R S E R  ***********************************
@@ -152,93 +133,9 @@ parser MyParser(packet_in packet,
 
     state parse_tcp {
         packet.extract(hdr.tcp);
-        bit<4> tcp_header_length = hdr.tcp.dataOffset;
-        transition select(tcp_header_length) {
-            5:       accept;
-            default: parse_tcp_options;
-        }
+        transition accept; 
     }
 
-    state parse_tcp_options {
-        bit<8> kind = packet.lookahead<bit<8>>();
-        transition select(kind) {
-            0:    accept;
-            1:    parse_nop;
-            0xfd: parse_flow_info;
-            default: parse_other_option;
-        }
-    }
-
-    state parse_nop {
-        packet.advance(8);
-        transition parse_tcp_options;
-    }
-
-    state parse_other_option {
-        packet.advance(8);
-        transition select(packet.lookahead<bit<8>>()) {
-            2:  parse_skip_1;  3:  parse_skip_2;  4:  parse_skip_3;
-            5:  parse_skip_4;  6:  parse_skip_5;  7:  parse_skip_6;
-            8:  parse_skip_7;  9:  parse_skip_8; 10: parse_skip_9;
-            11: parse_skip_10;12: parse_skip_11;13: parse_skip_12;
-            14: parse_skip_13;15: parse_skip_14;16: parse_skip_15;
-            17: parse_skip_16;18: parse_skip_17;19: parse_skip_18;
-            20: parse_skip_19;21: parse_skip_20;22: parse_skip_21;
-            23: parse_skip_22;24: parse_skip_23;25: parse_skip_24;
-            26: parse_skip_25;27: parse_skip_26;28: parse_skip_27;
-            29: parse_skip_28;30: parse_skip_29;31: parse_skip_30;
-            32: parse_skip_31;33: parse_skip_32;34: parse_skip_33;
-            35: parse_skip_34;36: parse_skip_35;37: parse_skip_36;
-            38: parse_skip_37;39: parse_skip_38;40: parse_skip_39;
-            default: accept;
-        }
-    }
-
-    // Skip states
-    state parse_skip_1  { packet.advance(1*8);  transition parse_tcp_options; }
-    state parse_skip_2  { packet.advance(2*8);  transition parse_tcp_options; }
-    state parse_skip_3  { packet.advance(3*8);  transition parse_tcp_options; }
-    state parse_skip_4  { packet.advance(4*8);  transition parse_tcp_options; }
-    state parse_skip_5  { packet.advance(5*8);  transition parse_tcp_options; }
-    state parse_skip_6  { packet.advance(6*8);  transition parse_tcp_options; }
-    state parse_skip_7  { packet.advance(7*8);  transition parse_tcp_options; }
-    state parse_skip_8  { packet.advance(8*8);  transition parse_tcp_options; }
-    state parse_skip_9  { packet.advance(9*8);  transition parse_tcp_options; }
-    state parse_skip_10 { packet.advance(10*8); transition parse_tcp_options; }
-    state parse_skip_11 { packet.advance(11*8); transition parse_tcp_options; }
-    state parse_skip_12 { packet.advance(12*8); transition parse_tcp_options; }
-    state parse_skip_13 { packet.advance(13*8); transition parse_tcp_options; }
-    state parse_skip_14 { packet.advance(14*8); transition parse_tcp_options; }
-    state parse_skip_15 { packet.advance(15*8); transition parse_tcp_options; }
-    state parse_skip_16 { packet.advance(16*8); transition parse_tcp_options; }
-    state parse_skip_17 { packet.advance(17*8); transition parse_tcp_options; }
-    state parse_skip_18 { packet.advance(18*8); transition parse_tcp_options; }
-    state parse_skip_19 { packet.advance(19*8); transition parse_tcp_options; }
-    state parse_skip_20 { packet.advance(20*8); transition parse_tcp_options; }
-    state parse_skip_21 { packet.advance(21*8); transition parse_tcp_options; }
-    state parse_skip_22 { packet.advance(22*8); transition parse_tcp_options; }
-    state parse_skip_23 { packet.advance(23*8); transition parse_tcp_options; }
-    state parse_skip_24 { packet.advance(24*8); transition parse_tcp_options; }
-    state parse_skip_25 { packet.advance(25*8); transition parse_tcp_options; }
-    state parse_skip_26 { packet.advance(26*8); transition parse_tcp_options; }
-    state parse_skip_27 { packet.advance(27*8); transition parse_tcp_options; }
-    state parse_skip_28 { packet.advance(28*8); transition parse_tcp_options; }
-    state parse_skip_29 { packet.advance(29*8); transition parse_tcp_options; }
-    state parse_skip_30 { packet.advance(30*8); transition parse_tcp_options; }
-    state parse_skip_31 { packet.advance(31*8); transition parse_tcp_options; }
-    state parse_skip_32 { packet.advance(32*8); transition parse_tcp_options; }
-    state parse_skip_33 { packet.advance(33*8); transition parse_tcp_options; }
-    state parse_skip_34 { packet.advance(34*8); transition parse_tcp_options; }
-    state parse_skip_35 { packet.advance(35*8); transition parse_tcp_options; }
-    state parse_skip_36 { packet.advance(36*8); transition parse_tcp_options; }
-    state parse_skip_37 { packet.advance(37*8); transition parse_tcp_options; }
-    state parse_skip_38 { packet.advance(38*8); transition parse_tcp_options; }
-    state parse_skip_39 { packet.advance(39*8); transition parse_tcp_options; }
-
-    state parse_flow_info {
-        packet.extract(hdr.flow_info);
-        transition accept;
-    }
 }
 
 /*************************************************************************
@@ -275,6 +172,7 @@ control MyIngress(inout headers hdr,
 
     table ipv4_lpm {
         key = {
+            hdr.ipv4.srcAddr: exact;
             hdr.ipv4.dstAddr: lpm;
         }
         actions = {
@@ -284,6 +182,19 @@ control MyIngress(inout headers hdr,
         }
         size = 1024;
         default_action = send_to_cpu();
+    }
+
+    table ipv4_direct {
+        key = {
+            hdr.ipv4.dstAddr: lpm;
+        }
+        actions = {
+            ipv4_forward;
+            drop;
+            NoAction;
+        }
+        size = 1024;
+        default_action = NoAction();
     }
 
     action arp_forward(macAddr_t addr) {
@@ -325,18 +236,11 @@ control MyIngress(inout headers hdr,
             arp_exact.apply();
         }
         else if (hdr.ipv4.isValid()) {
-            ipv4_lpm.apply();
-            if (hdr.flow_info.isValid()) {
-                bit<32> ptr;
-                reg_ptr.read(ptr,0);
-                bit<32> index = ptr % 1024;
-                reg_total_time.write(index, hdr.flow_info.total_time);
-                reg_elapsed_time.write(index, hdr.flow_info.elapsed_time);
-                reg_total_size.write(index, hdr.flow_info.total_size);
-                reg_sent_size.write(index, hdr.flow_info.sent_size);
-                reg_estimated_remaining_time.write(index, hdr.flow_info.estimated_remaining_time);
-                ptr = (ptr + 1) % 1024;
-                reg_ptr.write(0,ptr); 
+            if (ipv4_direct.apply().hit) {
+
+            }
+            else {
+                ipv4_lpm.apply();
             }
         }
     }
@@ -383,7 +287,6 @@ control MyDeparser(packet_out packet, in headers hdr) {
         packet.emit(hdr.arp);
         packet.emit(hdr.ipv4);
         packet.emit(hdr.tcp);
-        packet.emit(hdr.flow_info);
     }
 }
 
